@@ -1,0 +1,10 @@
+10293832,juridica,leonardo,leo@gmail.com,31828387122,250000
+20384756,natural,mariana,mariana@gmail.com,31234567890,300000
+30485769,natural,carlos,carlos@gmail.com,31598765432,200000
+40586790,natural,andrea,andrea@gmail.com,31877665544,280000
+50687901,natural,jose,jose@gmail.com,31122334455,350000
+60789012,natural,lucia,lucia@gmail.com,32099887766,400000
+70890123,juridica,manuel,manuel@gmail.com,31966554433,150000
+80901234,natural,sofia,sofia@gmail.com,31455667788,330000
+91012345,juridica,felipe,felipe@gmail.com,31788990077,290000
+10123456,natural,isabel,isabel@gmail.com,31322334455,370000
