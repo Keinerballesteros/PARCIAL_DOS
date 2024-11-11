@@ -17,8 +17,9 @@ import javax.swing.JOptionPane;
 
 
 public class Banco {
-    int turno = 1;
-    int turnoNoPreferencial = 1;
+    boolean[] habilitar = {false,false};
+    int turno = 0;
+    int turnoNoPreferencial = 0;
     Queue<Cliente> colaDePrioridades = new LinkedList<>();
     Queue<String> colaSinPrioridad = new LinkedList<>();
     
@@ -42,30 +43,72 @@ public class Banco {
         return matriz;
     }
     
-    public void solicitarTurno(){
+    public boolean[] solicitarTurno(){
+        
         String id = JOptionPane.showInputDialog("Ingrese el numero de documento");
+        if(verificarString(id)==false){
+            JOptionPane.showMessageDialog(
+                null,
+                "Id con menos de 8 dígitos o con caracteres diferentes a números.",
+                "Advertencia",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return habilitar;
+        }
         String clientes[][] = retornarMatriz();
+        for (Cliente Cliente : colaDePrioridades) {
+            if(id.equalsIgnoreCase(Cliente.getId())){
+                JOptionPane.showMessageDialog(
+                    null,
+                    "El Id ingresado ya cuenta con un turno en la cola.",
+                    "Advertencia",
+                    JOptionPane.WARNING_MESSAGE
+                );
+                return habilitar;
+            }
+        }
+        for (String Cliente : colaSinPrioridad) {
+            if(id.equalsIgnoreCase(Cliente)){
+                JOptionPane.showMessageDialog(
+                    null,
+                    "El Id ingresado ya cuenta con un turno en la cola.",
+                    "Advertencia",
+                    JOptionPane.WARNING_MESSAGE
+                );
+                return habilitar;
+            }
+        }
         for (int i = 0; i < 10; i++) {
             if(clientes[i][0].equalsIgnoreCase(id)){
                 Cliente cliente = new Cliente(clientes[i][0],clientes[i][1],clientes[i][2],clientes[i][3],clientes[i][4],clientes[i][5]);
                 colaDePrioridades.add(cliente);
                 JOptionPane.showMessageDialog(null, "Se ha añadido a la cola preferencial");
-                return;
+                habilitar[0]=true;
+                return habilitar;
             }
         }
         colaSinPrioridad.add(id);
         JOptionPane.showMessageDialog(null, "Se ha añadido a la cola no preferencial");
+        habilitar[1]=true;
+        return habilitar;
     }
     
     public String turno(){
         String nombrePreferencial = "";
         try{
+            turno++;
             nombrePreferencial = turno +". "+ colaDePrioridades.poll().getNombre();
+            JOptionPane.showMessageDialog(
+                null,
+                "Atendiendo al cliente",
+                "En proceso...",
+                JOptionPane.INFORMATION_MESSAGE
+            );
         }catch(Exception e ){
             turno = -1;
         }
         
-        turno++;
+        
         return nombrePreferencial;
     }
     
@@ -73,19 +116,26 @@ public class Banco {
         String nombreNoPreferencial = "";
         
         try{
-            nombreNoPreferencial = turnoNoPreferencial +". "+ colaSinPrioridad.poll().toString();
+            turnoNoPreferencial++;
+            nombreNoPreferencial = turnoNoPreferencial +". "+ colaSinPrioridad.poll();
+            JOptionPane.showMessageDialog(
+                null,
+                "Atendiendo al cliente",
+                "En proceso...",
+                JOptionPane.INFORMATION_MESSAGE
+            );
         }catch(Exception e ){
             turnoNoPreferencial = -1;
         }
         
-        turnoNoPreferencial++;
+        
         return nombreNoPreferencial;
     }
     
     public String siguienteTurno1(){
         String nombrePreferencial = "";
         try{
-           nombrePreferencial = turno++ +". "+ colaDePrioridades.peek().getNombre();
+           nombrePreferencial = (turno+1) +". "+ colaDePrioridades.peek().getNombre();
         }catch(Exception e ){
         }
         return nombrePreferencial;
@@ -94,16 +144,42 @@ public class Banco {
     public String siguienteTurno2(){
         String nombreNoPreferencial = "";
         try{
-            nombreNoPreferencial = turno++ +". "+ colaSinPrioridad.peek().toString();
+            nombreNoPreferencial = (turnoNoPreferencial+1) +". "+ colaSinPrioridad.peek().toString();
         }catch(Exception e ){
             
         }
         return nombreNoPreferencial;
     }
     
+    
+     public static boolean verificarString(String cadena) {
+        int contadorDigitos = 0;
+
+        for (int i = 0; i < cadena.length(); i++) {
+            char c = cadena.charAt(i);
+            
+            if (Character.isDigit(c)) {
+                contadorDigitos++;
+            } else {
+                return false;
+            }
+        }
+
+        return contadorDigitos >= 8;
+    }
+    
    public void consultarTurno(){
        int contador = -1;
       String id = JOptionPane.showInputDialog(null, "Ingrese su id");
+      if(verificarString(id)==false){
+            JOptionPane.showMessageDialog(
+                null,
+                "Id con menos de 8 dígitos o con caracteres diferentes a números.",
+                "Advertencia",
+                JOptionPane.ERROR_MESSAGE
+            );
+          return;
+      }
        for (Cliente colaDePrioridade : colaDePrioridades) {
            contador++;
            if(colaDePrioridade.getId().equalsIgnoreCase(id)){
@@ -119,19 +195,24 @@ public class Banco {
                return;
            }
        }
-       JOptionPane.showMessageDialog(null, "IDENTIFICATE EN ESTA MONDA");  
+       JOptionPane.showMessageDialog(
+            null,
+            "Id sin ningún turno asignado.",
+            "Advertencia",
+            JOptionPane.WARNING_MESSAGE
+        );
    }
    
    public String[] consultarCola(){
        String[] array = new String[2];
        String mensaje= "";
        for (Cliente colaDePrioridade : colaDePrioridades) {
-           mensaje += colaDePrioridade.toString();
+           mensaje += colaDePrioridade.getId()+ " "+colaDePrioridade.getNombre() + "\n";
        }
        array[0] = mensaje;
        mensaje= "";
        for (String colaDePrioridade : colaSinPrioridad) {
-           mensaje += colaDePrioridade.toString();
+           mensaje += colaDePrioridade + "\n";
        }
        array[1] = mensaje;
        return array;
